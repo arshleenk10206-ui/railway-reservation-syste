@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRCTC Advanced Railway Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #111827;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-blue: #2563eb;
+            --accent-blue-hover: #1d4ed8;
+            --accent-red: #dc2626;
+            --accent-red-hover: #b91c1c;
+            --border-color: #1f2937;
+            --confirmed-color: #059669;
+            --waiting-color: #d97706;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 30px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            max-width: 1300px;
+            margin: 0 auto 30px auto;
+        }
+
+        .metric-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        .metric-card h3 {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-top: 8px;
+            color: #ffffff;
+        }
+
+        /* Main Layout */
+        .dashboard-layout {
+            display: flex;
+            gap: 30px;
+            max-width: 1300px;
+            margin: 0 auto;
+            align-items: flex-start;
+        }
+
+        .sidebar {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 12px;
+            width: 360px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar h2 {
+            font-size: 1.15rem;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            color: #ffffff;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 4px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            background-color: #030712;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            box-sizing: border-box;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 18px;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--accent-blue-hover);
+        }
+
+        .btn-cancel {
+            background-color: var(--accent-red);
+        }
+
+        .btn-cancel:hover {
+            background-color: var(--accent-red-hover);
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 25px 0;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex-grow: 1;
+        }
+
+        .table-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        .table-card h2 {
+            margin-top: 0;
+            font-size: 1.15rem;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 600;
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge-confirmed {
+            background-color: rgba(5, 150, 105, 0.15);
+            color: #34d399;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .badge-waiting {
+            background-color: rgba(217, 119, 6, 0.15);
+            color: #fbbf24;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🚆 IRCTC Advanced Reservation Dashboard</h1>
+        <div class="subtitle">Data Structures Mini-Project: Linked Lists & Queues</div>
+    </header>
+
+    <!-- Top KPI Metrics -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <h3>Confirmed Seats</h3>
+            <div class="value">{{ confirmed_count }} / {{ max_seats }}</div>
+        </div>
+        <div class="metric-card">
+            <h3>Waiting Queue</h3>
+            <div class="value">{{ waiting_count }}</div>
+        </div>
+        <div class="metric-card">
+            <h3>Total Collections</h3>
+            <div class="value">₹{{ revenue }}</div>
+        </div>
+    </div>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar Actions -->
+        <div class="sidebar">
+            <h2>Book Ticket</h2>
+            <form action="/book" method="POST">
+                <label>Passenger Name</label>
+                <input type="text" name="name" placeholder="e.g. Amit Kumar" required>
+                
+                <label>Age</label>
+                <input type="number" name="age" placeholder="e.g. 28" required>
+                
+                <label>Source Station</label>
+                <input type="text" name="source" placeholder="e.g. New Delhi" required>
+                
+                <label>Destination Station</label>
+                <input type="text" name="destination" placeholder="e.g. Mumbai Central" required>
+
+                <label>Journey Date</label>
+                <input type="date" name="journey_date" required>
+
+                <label>Select Train</label>
+                <select name="train_name" required>
+                    <option value="" disabled selected>Choose a train</option>
+                    <option value="12952 - Rajdhani Express">12952 - Rajdhani Express</option>
+                    <option value="12004 - Shatabdi Express">12004 - Shatabdi Express</option>
+                    <option value="22436 - Vande Bharat Express">22436 - Vande Bharat Express</option>
+                    <option value="12954 - August Kranti Express">12954 - August Kranti Express</option>
+                </select>
+
+                <label>Seat Class & Fare</label>
+                <select name="seat_class" required>
+                    <option value="" disabled selected>Select class</option>
+                    <option value="Sleeper (SL)">Sleeper (SL) - ₹550</option>
+                    <option value="Chair Car (CC)">Chair Car (CC) - ₹950</option>
+                    <option value="AC 3 Tier (3AC)">AC 3 Tier (3AC) - ₹1,450</option>
+                    <option value="AC 2 Tier (2AC)">AC 2 Tier (2AC) - ₹2,100</option>
+                </select>
+                
+                <button type="submit">Proceed to Book</button>
+            </form>
+
+            <hr>
+
+            <h2>Cancel Booking</h2>
+            <form action="/cancel" method="POST">
+                <label>Enter PNR Number</label>
+                <input type="text" name="pnr" placeholder="e.g. PNR1001" required>
+                <button type="submit" class="btn-cancel">Cancel Booking</button>
+            </form>
+        </div>
+
+        <!-- Tables Display Area -->
+        <div class="content-area">
+            <!-- Confirmed Table -->
+            <div class="table-card">
+                <h2>Confirmed Bookings (Linked List Structure)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>PNR</th>
+                            <th>Passenger</th>
+                            <th>Train & Route</th>
+                            <th>Date & Class</th>
+                            <th>Fare</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in confirmed %}
+                        <tr>
+                            <td><strong>{{ p.pnr }}</strong></td>
+                            <td>{{ p.name }} ({{ p.age }})</td>
+                            <td>{{ p.train_name }}<br><small style="color:var(--text-muted)">{{ p.source }} → {{ p.destination }}</small></td>
+                            <td>{{ p.journey_date }}<br><small style="color:var(--text-muted)">{{ p.seat_class }}</small></td>
+                            <td>₹{{ p.price }}</td>
+                            <td><span class="badge-confirmed">{{ p.status }}</span></td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="6" class="empty-state">No confirmed reservations available.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Waiting Queue Table -->
+            <div class="table-card">
+                <h2>Waiting List Queue (FIFO Structure)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>PNR</th>
+                            <th>Passenger</th>
+                            <th>Train & Route</th>
+                            <th>Date & Class</th>
+                            <th>Fare</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in waiting %}
+                        <tr>
+                            <td><strong>{{ p.pnr }}</strong></td>
+                            <td>{{ p.name }} ({{ p.age }})</td>
+                            <td>{{ p.train_name }}<br><small style="color:var(--text-muted)">{{ p.source }} → {{ p.destination }}</small></td>
+                            <td>{{ p.journey_date }}<br><small style="color:var(--text-muted)">{{ p.seat_class }}</small></td>
+                            <td>₹{{ p.price }}</td>
+                            <td><span class="badge-waiting">{{ p.status }}</span></td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="6" class="empty-state">Waiting queue is currently empty.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
