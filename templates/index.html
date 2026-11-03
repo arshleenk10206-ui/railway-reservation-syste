@@ -3,367 +3,430 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IRCTC Advanced Railway Dashboard</title>
+    <title>Train Dashboard - ADSA Project</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --card-bg: #111827;
-            --text-color: #f3f4f6;
-            --text-muted: #9ca3af;
-            --accent-blue: #2563eb;
-            --accent-blue-hover: #1d4ed8;
-            --accent-red: #dc2626;
-            --accent-red-hover: #b91c1c;
-            --border-color: #1f2937;
-            --confirmed-color: #059669;
-            --waiting-color: #d97706;
+            --bg-dark: #0b0f19;
+            --card-bg: #131b2e;
+            --card-border: #1e293b;
+            --accent-blue: #00d2ff;
+            --accent-glow: #0088ff;
+            --green-active: #00e676;
+            --red-active: #ff5252;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
         }
 
         body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 30px;
+            padding-bottom: 50px;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 25px;
+        /* Top Nav Pills */
+        .nav-pills-custom .nav-link {
+            background: #1e293b;
+            color: var(--text-sub);
+            border-radius: 20px;
+            padding: 6px 18px;
+            margin-right: 8px;
+            font-size: 0.88rem;
+            font-weight: 500;
+        }
+        .nav-pills-custom .nav-link.active {
+            background: linear-gradient(135deg, #0088ff, #00d2ff);
+            color: #fff;
         }
 
-        h1 {
-            font-size: 2.2rem;
-            margin-bottom: 5px;
-            color: #ffffff;
-            letter-spacing: -0.5px;
-        }
-
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        /* Metrics Grid */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            max-width: 1300px;
-            margin: 0 auto 30px auto;
-        }
-
-        .metric-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 20px;
+        /* Metrics Stat Box */
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            padding: 16px 20px;
         }
-
-        .metric-card h3 {
-            margin: 0;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .metric-card .value {
-            font-size: 1.8rem;
+        .stat-value {
+            font-size: 2rem;
             font-weight: 700;
-            margin-top: 8px;
-            color: #ffffff;
+            color: #fff;
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-sub);
         }
 
-        /* Main Layout */
-        .dashboard-layout {
-            display: flex;
-            gap: 30px;
-            max-width: 1300px;
-            margin: 0 auto;
-            align-items: flex-start;
-        }
-
-        .sidebar {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 25px;
-            border-radius: 12px;
-            width: 360px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-        }
-
-        .sidebar h2 {
-            font-size: 1.15rem;
-            margin-top: 0;
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            color: #ffffff;
-        }
-
-        label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            display: block;
-            margin-top: 12px;
-            margin-bottom: 4px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 10px 12px;
-            background-color: #030712;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-color);
-            box-sizing: border-box;
-            font-size: 0.9rem;
-            transition: border-color 0.2s;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--accent-blue);
-        }
-
-        button {
-            width: 100%;
-            padding: 11px;
-            background-color: var(--accent-blue);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            font-weight: 600;
+        /* Train Cards Grid */
+        .train-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 18px;
+            height: 100%;
+            transition: all 0.2s ease;
             cursor: pointer;
-            margin-top: 18px;
-            transition: background-color 0.2s;
         }
-
-        button:hover {
-            background-color: var(--accent-blue-hover);
+        .train-card:hover, .train-card.selected {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.15);
         }
-
-        .btn-cancel {
-            background-color: var(--accent-red);
+        .month-badge {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+            margin: 1px;
         }
+        .month-active { background: var(--green-active); color: #000; }
+        .month-inactive { background: #1e293b; color: #475569; }
 
-        .btn-cancel:hover {
-            background-color: var(--accent-red-hover);
-        }
-
-        hr {
-            border: none;
-            border-top: 1px solid var(--border-color);
-            margin: 25px 0;
-        }
-
-        /* Content Area */
-        .content-area {
-            flex-grow: 1;
-        }
-
-        .table-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-        }
-
-        .table-card h2 {
-            margin-top: 0;
-            font-size: 1.15rem;
-            margin-bottom: 15px;
-            color: #ffffff;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 12px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.9rem;
-        }
-
-        th {
-            color: var(--text-muted);
-            font-weight: 600;
-            background-color: rgba(255, 255, 255, 0.02);
-        }
-
-        .badge-confirmed {
-            background-color: rgba(5, 150, 105, 0.15);
-            color: #34d399;
+        .fare-badge {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
             padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
+            margin-right: 4px;
         }
 
-        .badge-waiting {
-            background-color: rgba(217, 119, 6, 0.15);
-            color: #fbbf24;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 0.8rem;
-        }
-
-        .empty-state {
+        /* Seat Nodes Grid */
+        .seat-slot {
+            background: #0f172a;
+            border: 2px dashed #334155;
+            border-radius: 10px;
+            padding: 15px;
             text-align: center;
-            color: var(--text-muted);
-            font-style: italic;
+        }
+        .seat-slot.occupied {
+            border: 2px solid var(--accent-blue);
+            background: rgba(0, 136, 255, 0.08);
+        }
+
+        /* Quick Booking Bar */
+        .booking-bar {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
             padding: 20px;
+        }
+
+        .form-control, .form-select {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            color: #fff;
+            border-radius: 8px;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: #0f172a;
+            color: #fff;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 0.25rem rgba(0, 210, 255, 0.25);
+        }
+
+        .table-custom {
+            color: var(--text-main);
+        }
+        .table-custom th {
+            color: var(--text-sub);
+            border-bottom-color: var(--card-border);
+            font-weight: 500;
+        }
+        .table-custom td {
+            border-bottom-color: #1e293b;
+            vertical-align: middle;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>🚆 IRCTC Advanced Reservation Dashboard</h1>
-        <div class="subtitle">Data Structures Mini-Project: Linked Lists & Queues</div>
-    </header>
-
-    <!-- Top KPI Metrics -->
-    <div class="metrics-grid">
-        <div class="metric-card">
-            <h3>Confirmed Seats</h3>
-            <div class="value">{{ confirmed_count }} / {{ max_seats }}</div>
-        </div>
-        <div class="metric-card">
-            <h3>Waiting Queue</h3>
-            <div class="value">{{ waiting_count }}</div>
-        </div>
-        <div class="metric-card">
-            <h3>Total Collections</h3>
-            <div class="value">₹{{ revenue }}</div>
-        </div>
+<div class="container py-4">
+    <!-- Header Navigation -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <ul class="nav nav-pills nav-pills-custom" id="mainTab" role="tablist">
+            <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboard-tab">Linked list</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#queue-tab">Queue (FIFO)</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#algorithm-tab">Algorithm tracing</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#complexity-tab">Time & space complexity</button></li>
+        </ul>
     </div>
 
-    <div class="dashboard-layout">
-        <!-- Sidebar Actions -->
-        <div class="sidebar">
-            <h2>Book Ticket</h2>
-            <form action="/book" method="POST">
-                <label>Passenger Name</label>
-                <input type="text" name="name" placeholder="e.g. Amit Kumar" required>
-                
-                <label>Age</label>
-                <input type="number" name="age" placeholder="e.g. 28" required>
-                
-                <label>Source Station</label>
-                <input type="text" name="source" placeholder="e.g. New Delhi" required>
-                
-                <label>Destination Station</label>
-                <input type="text" name="destination" placeholder="e.g. Mumbai Central" required>
+    <div class="tab-content">
+        <!-- LINKED LIST DASHBOARD TAB -->
+        <div class="tab-pane fade show active" id="dashboard-tab">
+            <div class="mb-3">
+                <h3 class="fw-bold mb-1"><i class="fa-solid font-awesome me-2" style="color:var(--accent-blue)"></i>Train dashboard</h3>
+                <p class="text-secondary small mb-0">Year-round availability · fares · live waiting counts. Select a train to book dynamic tickets.</p>
+            </div>
 
-                <label>Journey Date</label>
-                <input type="date" name="journey_date" required>
+            <!-- Top Summary Stats -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-value">{{ confirmed|length }}/{{ capacity }}</div>
+                        <div class="stat-label">Confirmed Seats Occupied</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-value">{{ waiting|length }}</div>
+                        <div class="stat-label">Passengers in Waiting List</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-value">₹{{ total_collections }}</div>
+                        <div class="stat-label">Total Revenue Collected</div>
+                    </div>
+                </div>
+            </div>
 
-                <label>Select Train</label>
-                <select name="train_name" required>
-                    <option value="" disabled selected>Choose a train</option>
-                    <option value="12952 - Rajdhani Express">12952 - Rajdhani Express</option>
-                    <option value="12004 - Shatabdi Express">12004 - Shatabdi Express</option>
-                    <option value="22436 - Vande Bharat Express">22436 - Vande Bharat Express</option>
-                    <option value="12954 - August Kranti Express">12954 - August Kranti Express</option>
-                </select>
+            <!-- Train Selection Grid -->
+            <div class="row g-3 mb-4">
+                {% for tname, tinfo in trains.items() %}
+                <div class="col-md-4">
+                    <div class="train-card" onclick="selectTrain('{{ tname }}', '{{ tinfo.route }}')">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h6 class="fw-bold mb-0">{{ tname }}</h6>
+                                <span class="small text-secondary">{{ tinfo.route }}</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            {% for c, f in tinfo.fares.items() %}
+                                <span class="fare-badge"><strong style="color:var(--accent-blue)">{{ c }}</strong> ₹{{ f }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            {% set months_labels = ['J','F','M','A','M','J','J','A','S','O','N','D'] %}
+                            {% for m in tinfo.months %}
+                                <span class="month-badge {% if m == 1 %}month-active{% else %}month-inactive{% endif %}">
+                                    {{ months_labels[loop.index0] }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                        <div class="d-flex justify-content-between text-secondary small pt-2 border-top border-dark">
+                            <span><i class="fa-solid fa-circle me-1" style="color:var(--green-active); font-size: 8px;"></i> Running now</span>
+                            <span>{{ confirmed|length }}/{{ capacity }} seats</span>
+                            <span>{{ waiting|length }} waiting</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
 
-                <label>Seat Class & Fare</label>
-                <select name="seat_class" required>
-                    <option value="" disabled selected>Select class</option>
-                    <option value="Sleeper (SL)">Sleeper (SL) - ₹550</option>
-                    <option value="Chair Car (CC)">Chair Car (CC) - ₹950</option>
-                    <option value="AC 3 Tier (3AC)">AC 3 Tier (3AC) - ₹1,450</option>
-                    <option value="AC 2 Tier (2AC)">AC 2 Tier (2AC) - ₹2,100</option>
-                </select>
-                
-                <button type="submit">Proceed to Book</button>
-            </form>
+            <!-- Booking Control Panel -->
+            <div class="booking-bar mb-4">
+                <form action="/book" method="POST">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-2">
+                            <label class="form-label small text-secondary mb-1">Train</label>
+                            <select name="train_name" id="train_select" class="form-select form-select-sm" required onchange="updateRouteAndClasses()">
+                                {% for tname in trains.keys() %}
+                                    <option value="{{ tname }}">{{ tname }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small text-secondary mb-1">Passenger Name</label>
+                            <input type="text" name="name" id="p_name" class="form-control form-control-sm" placeholder="e.g. Aarav" required>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="form-label small text-secondary mb-1">Age</label>
+                            <input type="number" name="age" id="p_age" class="form-control form-control-sm" value="25" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small text-secondary mb-1">Source Station</label>
+                            <input type="text" name="source" id="p_source" class="form-control form-control-sm" value="New Delhi" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small text-secondary mb-1">Destination Station</label>
+                            <input type="text" name="destination" id="p_dest" class="form-control form-control-sm" value="Mumbai" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small text-secondary mb-1">Date & Class</label>
+                            <div class="d-flex gap-1">
+                                <input type="date" name="journey_date" id="p_date" class="form-control form-control-sm" value="2026-12-15" required>
+                                <select name="seat_class" id="class_select" class="form-select form-select-sm" required>
+                                    <option value="3AC">3AC</option>
+                                    <option value="2AC">2AC</option>
+                                    <option value="1AC">1AC</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-1 d-flex gap-1">
+                            <button type="submit" class="btn btn-sm btn-info fw-bold w-100 text-white" style="background:var(--accent-blue); border:none;">Book</button>
+                        </div>
+                    </div>
+                </form>
+                <div class="d-flex gap-2 mt-3 pt-2 border-top border-dark">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="fillDemo()">Fill Demo Data</button>
+                    <form action="/reset" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Reset Dashboard</button>
+                    </form>
+                </div>
+            </div>
 
-            <hr>
+            <!-- Seat Nodes Array / Visual Linked List -->
+            <h6 class="fw-bold mb-3 text-secondary">Confirmed Seat Slots (Linked List Nodes)</h6>
+            <div class="row g-3 mb-4">
+                {% for slot in slots %}
+                <div class="col-md-3">
+                    <div class="seat-slot {% if slot %}occupied{% endif %}">
+                        <div class="small text-secondary mb-1">Seat {{ loop.index }}</div>
+                        {% if slot %}
+                            <div class="fw-bold text-white mb-1">{{ slot.name }} ({{ slot.age }})</div>
+                            <div class="badge bg-primary mb-1">{{ slot.pnr }} · {{ slot.seat_class }}</div>
+                            <div class="small text-secondary">{{ slot.source }} → {{ slot.destination }}</div>
+                            <div class="small text-secondary">{{ slot.journey_date }} · ₹{{ slot.price }}</div>
+                            <form action="/cancel" method="POST" class="mt-2">
+                                <input type="hidden" name="pnr" value="{{ slot.pnr }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2 style='font-size:11px'">Cancel</button>
+                            </form>
+                        {% else %}
+                            <div class="text-muted fw-bold py-3">Free</div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
 
-            <h2>Cancel Booking</h2>
-            <form action="/cancel" method="POST">
-                <label>Enter PNR Number</label>
-                <input type="text" name="pnr" placeholder="e.g. PNR1001" required>
-                <button type="submit" class="btn-cancel">Cancel Booking</button>
-            </form>
+            <!-- Confirmed Passenger Table -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header border-secondary fw-bold text-white">Confirmed Passenger Linked List Details</div>
+                <div class="card-body p-0">
+                    <table class="table table-custom mb-0">
+                        <thead>
+                            <tr>
+                                <th>PNR</th>
+                                <th>Passenger</th>
+                                <th>Train & Route</th>
+                                <th>Journey Date</th>
+                                <th>Class</th>
+                                <th>Fare</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in confirmed %}
+                            <tr>
+                                <td><span class="badge bg-secondary">{{ p.pnr }}</span></td>
+                                <td>{{ p.name }} ({{ p.age }})</td>
+                                <td>{{ p.train_name }}<br><small class="text-secondary">{{ p.source }} → {{ p.destination }}</small></td>
+                                <td>{{ p.journey_date }}</td>
+                                <td><span class="badge bg-info text-dark">{{ p.seat_class }}</span></td>
+                                <td>₹{{ p.price }}</td>
+                                <td><span class="badge bg-success">Confirmed</span></td>
+                                <td>
+                                    <form action="/cancel" method="POST" class="d-inline">
+                                        <input type="hidden" name="pnr" value="{{ p.pnr }}">
+                                        <button class="btn btn-sm btn-outline-danger">Cancel</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="8" class="text-center text-muted py-3">No confirmed bookings yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
-        <!-- Tables Display Area -->
-        <div class="content-area">
-            <!-- Confirmed Table -->
-            <div class="table-card">
-                <h2>Confirmed Bookings (Linked List Structure)</h2>
-                <table>
+        <!-- QUEUE TAB -->
+        <div class="tab-pane fade" id="queue-tab">
+            <div class="card bg-dark border-secondary">
+                <div class="card-header border-secondary fw-bold text-white">Waiting List Queue (FIFO Data Structure)</div>
+                <div class="card-body p-0">
+                    <table class="table table-custom mb-0">
+                        <thead>
+                            <tr>
+                                <th>Queue Pos</th>
+                                <th>PNR</th>
+                                <th>Passenger</th>
+                                <th>Train & Route</th>
+                                <th>Journey Date</th>
+                                <th>Class</th>
+                                <th>Fare</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in waiting %}
+                            <tr>
+                                <td>#{{ loop.index }}</td>
+                                <td><span class="badge bg-secondary">{{ p.pnr }}</span></td>
+                                <td>{{ p.name }} ({{ p.age }})</td>
+                                <td>{{ p.train_name }}<br><small class="text-secondary">{{ p.source }} → {{ p.destination }}</small></td>
+                                <td>{{ p.journey_date }}</td>
+                                <td><span class="badge bg-warning text-dark">{{ p.seat_class }}</span></td>
+                                <td>₹{{ p.price }}</td>
+                                <td><span class="badge bg-danger">Waiting Queue</span></td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="8" class="text-center text-muted py-3">Waiting queue is currently empty.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ALGORITHM TRACING TAB -->
+        <div class="tab-pane fade" id="algorithm-tab">
+            <div class="stat-card">
+                <h5 class="fw-bold text-white mb-3">Algorithm Execution Logic</h5>
+                <ol class="text-secondary">
+                    <li class="mb-2"><strong class="text-white">Booking Insertion:</strong> Checks if <code class="text-info">ConfirmedLinkedList.size &lt; capacity</code>. If true, appends node to Linked List ($O(N)$ insertion). If full, enqueues passenger into <code class="text-warning">WaitingQueue</code> ($O(1)$ enqueue).</li>
+                    <li class="mb-2"><strong class="text-white">Cancellation &amp; Automatic Promotion:</strong> Searches confirmed linked list for matching PNR ($O(N)$ node traversal). If found, removes the node and instantly dequeues head passenger from <code class="text-warning">WaitingQueue</code> ($O(1)$ FIFO dequeue) to promote them to Confirmed status.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- TIME & SPACE COMPLEXITY TAB -->
+        <div class="tab-pane fade" id="complexity-tab">
+            <div class="stat-card">
+                <h5 class="fw-bold text-white mb-3">Data Structure Complexity Breakdown</h5>
+                <table class="table table-custom">
                     <thead>
-                        <tr>
-                            <th>PNR</th>
-                            <th>Passenger</th>
-                            <th>Train & Route</th>
-                            <th>Date & Class</th>
-                            <th>Fare</th>
-                            <th>Status</th>
-                        </tr>
+                        <tr><th>Operation</th><th>Linked List</th><th>FIFO Queue</th></tr>
                     </thead>
                     <tbody>
-                        {% for p in confirmed %}
-                        <tr>
-                            <td><strong>{{ p.pnr }}</strong></td>
-                            <td>{{ p.name }} ({{ p.age }})</td>
-                            <td>{{ p.train_name }}<br><small style="color:var(--text-muted)">{{ p.source }} → {{ p.destination }}</small></td>
-                            <td>{{ p.journey_date }}<br><small style="color:var(--text-muted)">{{ p.seat_class }}</small></td>
-                            <td>₹{{ p.price }}</td>
-                            <td><span class="badge-confirmed">{{ p.status }}</span></td>
-                        </tr>
-                        {% else %}
-                        <tr><td colspan="6" class="empty-state">No confirmed reservations available.</td></tr>
-                        {% endfor %}
+                        <tr><td>Seat Allocation / Enqueue</td><td>$O(1)$ at Head / $O(N)$ at Tail</td><td>$O(1)$</td></tr>
+                        <tr><td>PNR Cancellation Search</td><td>$O(N)$</td><td>$O(N)$</td></tr>
+                        <tr><td>Automatic Queue Promotion</td><td>$O(1)$</td><td>$O(1)$ Dequeue</td></tr>
                     </tbody>
                 </table>
             </div>
-
-            <!-- Waiting Queue Table -->
-            <div class="table-card">
-                <h2>Waiting List Queue (FIFO Structure)</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>PNR</th>
-                            <th>Passenger</th>
-                            <th>Train & Route</th>
-                            <th>Date & Class</th>
-                            <th>Fare</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for p in waiting %}
-                        <tr>
-                            <td><strong>{{ p.pnr }}</strong></td>
-                            <td>{{ p.name }} ({{ p.age }})</td>
-                            <td>{{ p.train_name }}<br><small style="color:var(--text-muted)">{{ p.source }} → {{ p.destination }}</small></td>
-                            <td>{{ p.journey_date }}<br><small style="color:var(--text-muted)">{{ p.seat_class }}</small></td>
-                            <td>₹{{ p.price }}</td>
-                            <td><span class="badge-waiting">{{ p.status }}</span></td>
-                        </tr>
-                        {% else %}
-                        <tr><td colspan="6" class="empty-state">Waiting queue is currently empty.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
         </div>
-    </div>
 
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function selectTrain(name, route) {
+        document.getElementById('train_select').value = name;
+        const parts = route.split(' → ');
+        if(parts.length === 2) {
+            document.getElementById('p_source').value = parts[0].trim();
+            document.getElementById('p_dest').value = parts[1].replace(/\(.*\)/, '').trim();
+        }
+    }
+
+    function fillDemo() {
+        document.getElementById('p_name').value = "Aarav Sharma";
+        document.getElementById('p_age').value = "28";
+        document.getElementById('p_source').value = "New Delhi";
+        document.getElementById('p_dest').value = "Mumbai";
+        document.getElementById('p_date').value = "2026-12-20";
+    }
+</script>
 </body>
 </html>
